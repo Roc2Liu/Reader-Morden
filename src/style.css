@@ -1,0 +1,231 @@
+*{box-sizing:border-box}
+:root{
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  color:#37342f;background:#f4f0e8;font-synthesis:none;
+  --reading-serif:ui-serif,"Noto Serif SC","Source Han Serif SC","Songti SC",STSong,"SimSun",serif;
+  --reading-sans:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+}
+html,body,#root{width:100%;height:100%;margin:0}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{
+  height:100%;overflow:hidden;position:relative;
+  background:var(--bg);color:var(--fg);
+  --bg:#f4f0e8;--fg:#37342f;--muted:#8e887e;
+  --panel:rgba(249,247,242,.88);--line:rgba(55,50,43,.075);--accent:#756b5e;
+}
+.theme-cream{--bg:#efe6d6;--fg:#40382f;--muted:#948575;--panel:rgba(247,240,228,.88);--line:rgba(70,55,37,.08);--accent:#816f59}
+.theme-dark{--bg:#252422;--fg:#e4dfd7;--muted:#969087;--panel:rgba(38,37,35,.88);--line:rgba(255,255,255,.075);--accent:#bdb3a3}
+.theme-oled{--bg:#000;--fg:#e7e7e7;--muted:#777;--panel:rgba(10,10,10,.9);--line:rgba(255,255,255,.08);--accent:#bdbdbd}
+.boot{height:100%;display:grid;place-items:center;background:#f4f0e8;color:#777}
+.reader-chrome{position:fixed;inset:0;z-index:20;pointer-events:none;transition:opacity .22s ease}.reader-chrome .topbar,.reader-chrome .bottombar{pointer-events:none;opacity:0;transition:opacity .22s ease,transform .28s cubic-bezier(.22,.61,.36,1)}.reader-chrome.visible{pointer-events:none}.reader-chrome.visible .topbar,.reader-chrome.visible .bottombar{pointer-events:auto;opacity:1}.topbar,.bottombar{position:fixed;z-index:20;left:50%;display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);box-shadow:0 8px 28px rgba(42,36,29,.055);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.topbar{top:14px;transform:translate(-50%, -8px);width:min(980px,calc(100% - 28px));height:50px;padding:6px 8px;border-radius:16px}
+.bottombar{bottom:16px;transform:translate(-50%, 8px);padding:5px;border-radius:15px}
+.book-title{min-width:0;flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px;color:var(--muted)}
+.icon-btn,.bottombar button,.panel-head button{border:0;background:transparent;color:var(--fg);border-radius:12px;padding:9px 11px}
+.icon-btn:hover,.bottombar button:hover,.panel-head button:hover{background:rgba(127,116,98,.1)}
+.icon-btn{font-size:13px}
+.bottombar button{font-size:23px;line-height:1;width:38px;height:38px}
+.bottombar button:disabled{opacity:.25;cursor:default}
+.bottombar .chapter-pill{width:auto;font-size:12px;padding:0 16px;color:var(--muted)}
+.reader-scroll{height:100%;overflow:auto;scroll-behavior:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:clamp(78px,12vh,150px) 24px max(120px,14vh)}
+.reader-content{margin:0 auto;min-height:100%;color:var(--fg);transition:max-width .18s ease}
+.reader-content h1{font-size:1.72em;line-height:1.38;font-weight:620;margin:0 0 clamp(34px,5vh,54px);letter-spacing:-.025em}
+.chapter-kicker{color:var(--muted);font-size:11px;letter-spacing:.06em;margin:0 0 15px;opacity:.82}
+.reader-content p{margin-top:0;text-align:justify;word-break:break-word;text-wrap:pretty}
+.paragraph-window{position:relative}
+.chapter-end{text-align:center;color:var(--muted);font-size:12px;padding:50px 0 100px}
+.empty-reader{height:100%;display:grid;place-content:center;text-align:center;color:var(--muted);padding:30px}
+.empty-reader h1{color:var(--fg);font-weight:500;margin:8px 0}
+.empty-icon{margin:auto;width:56px;height:70px;border:1px solid var(--line);border-radius:7px;display:grid;place-items:center;background:var(--panel);color:var(--accent)}
+.backdrop{position:fixed;inset:0;z-index:30;background:rgba(20,18,15,.25);opacity:0;pointer-events:none;transition:.2s}
+.backdrop.show{opacity:1;pointer-events:auto}
+.side-panel{position:fixed;z-index:40;top:0;bottom:0;width:min(430px,92vw);background:var(--panel);border-color:var(--line);box-shadow:0 0 60px rgba(0,0,0,.18);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);padding:22px;overflow:auto}
+.library-panel,.chapters-panel{left:0;border-right:1px solid var(--line)}
+.settings-panel{right:0;border-left:1px solid var(--line)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.panel-head small{font-size:10px;letter-spacing:.16em;color:var(--muted)}
+.panel-head h2{margin:3px 0 0;font-size:22px;font-weight:550}
+.import-box{display:flex;flex-direction:column;gap:6px;border:1px dashed var(--line);border-radius:16px;padding:18px;margin-bottom:18px;color:var(--fg);background:rgba(127,116,98,.05)}
+.import-box input{display:none}
+.import-box span{font-weight:600}
+.import-box small{color:var(--muted)}
+.library-list{display:flex;flex-direction:column;gap:8px}
+.book-card{width:100%;display:flex;gap:13px;text-align:left;border:1px solid transparent;background:transparent;color:var(--fg);padding:10px;border-radius:14px}
+.book-card:hover,.book-card.active{background:rgba(127,116,98,.08);border-color:var(--line)}
+.book-cover{width:42px;height:56px;flex:none;border-radius:5px;background:var(--accent);color:var(--panel);display:grid;place-items:center}
+.book-meta{min-width:0;display:flex;flex-direction:column;gap:4px}
+.book-meta strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.book-meta span{font-size:12px;color:var(--muted)}
+.panel-footer{position:sticky;bottom:-22px;margin:20px -22px -22px;padding:14px 22px;background:var(--panel);border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px}
+.progress-line{height:3px;background:rgba(127,116,98,.15);border-radius:99px;flex:1;overflow:hidden}
+.progress-line span{display:block;height:100%;background:var(--accent)}
+.chapter-search input{width:100%;border:1px solid var(--line);background:rgba(127,116,98,.06);color:var(--fg);border-radius:11px;padding:10px 12px;outline:none;margin-bottom:10px}
+.chapter-list{display:flex;flex-direction:column}
+.chapter-list button{display:grid;grid-template-columns:36px 1fr auto;gap:8px;align-items:center;text-align:left;border:0;background:transparent;color:var(--muted);padding:11px 8px;border-radius:9px}
+.chapter-list button:hover{background:rgba(127,116,98,.06);color:var(--fg)}
+.chapter-list button.active{background:rgba(127,116,98,.1);color:var(--fg)}
+.chapter-list span{font-variant-numeric:tabular-nums;font-size:10px;padding-top:3px;opacity:.55}
+.chapter-list b{font-weight:450;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chapter-list em{font-style:normal;font-size:10px;opacity:.55;font-variant-numeric:tabular-nums}
+.settings-panel section{padding:18px 0;border-top:1px solid var(--line)}
+.settings-panel section:first-of-type{border-top:0}
+.settings-panel h3{font-size:12px;color:var(--muted);font-weight:600;margin:0 0 16px}
+.range-row{display:block;margin:14px 0}
+.range-row>span{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px}
+.range-row b{font-weight:500;color:var(--muted)}
+.range-row input{width:100%;accent-color:var(--accent)}
+.theme-grid,.button-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.theme-grid button,.secondary,.danger{border:1px solid var(--line);border-radius:10px;background:rgba(127,116,98,.05);color:var(--fg);padding:10px}
+.theme-grid button.active{outline:2px solid var(--accent);outline-offset:1px}
+.secondary{width:100%;margin-top:8px}
+.danger{color:#a34b42}
+.file-button{display:block;text-align:center;cursor:pointer}
+.file-button input{display:none}
+.muted{color:var(--muted);font-size:12px}
+.toast{position:fixed;z-index:100;left:50%;bottom:82px;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 15px;border-radius:12px;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+@media(max-width:700px){
+  .topbar{top:8px;width:calc(100% - 16px)}
+  .reader-scroll{padding:82px 18px 90px}
+  .reader-content h1{font-size:1.55em;margin-bottom:30px}
+  .bottombar{bottom:9px}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+/* 沉浸式阅读：控制栏只在靠近屏幕边缘或点击正文时出现。 */
+.reader-chrome.visible .topbar{transform:translate(-50%,0)}
+.reader-chrome.visible .bottombar{transform:translate(-50%,0)}
+/* 章节读到末尾时，底部翻章导航自动出现；顶部工具栏仍保持隐藏。 */
+.reader-chrome.chapter-end-visible .bottombar{
+  pointer-events:auto;
+  opacity:1;
+  transform:translate(-50%,0);
+}
+.reader-scroll{scrollbar-gutter:stable}
+.reader-scroll::-webkit-scrollbar{width:8px}
+.reader-scroll::-webkit-scrollbar-thumb{background:rgba(120,110,95,.18);border-radius:99px}
+.reader-scroll::-webkit-scrollbar-track{background:transparent}
+@media(max-width:700px){
+  .reader-scroll{padding:70px 18px max(92px, 13vh)}
+  .reader-chrome .topbar,.reader-chrome .bottombar{transition-duration:.18s}
+}
+
+/* ---- Quiet reading system ---- */
+.font-sans .reader-content{font-family:var(--reading-sans)!important}
+.font-serif .reader-content{font-family:var(--reading-serif)!important}
+.font-serif .reader-content p{letter-spacing:.01em}
+.reader-content p{color:var(--fg);text-rendering:optimizeLegibility}
+.reader-content h1,.chapter-kicker{user-select:none}
+.reader-scroll:focus{outline:none}
+.reader-scroll::-webkit-scrollbar{width:6px}
+.reader-scroll::-webkit-scrollbar-thumb{background:rgba(100,92,80,.13)}
+.reader-scroll:hover::-webkit-scrollbar-thumb{background:rgba(100,92,80,.21)}
+.reader-chrome .topbar,.reader-chrome .bottombar{box-shadow:0 6px 24px rgba(40,34,27,.045)}
+.reader-chrome .icon-btn{color:var(--muted)}
+.reader-chrome .icon-btn:hover,.reader-chrome .bottombar button:hover{background:rgba(110,100,86,.065);color:var(--fg)}
+.reader-chrome .chapter-pill{font-variant-numeric:tabular-nums;min-width:74px}
+.chapter-end{opacity:.72}
+@media(min-width:1200px){
+  .reader-content{--desktop-side-space:clamp(24px,8vw,180px)}
+}
+@media(max-width:700px){
+  .reader-scroll{padding:76px 18px max(100px,13vh)}
+  .reader-content h1{font-size:1.48em}
+  .reader-content p{text-align:left}
+}
+
+/* ---- Native-feeling scroll + subtle paragraph reveal ---- */
+.reader-content p[data-reader-paragraph]{
+  opacity:0;
+  transform:translate3d(0,5px,0);
+  will-change:opacity,transform;
+  transition:
+    opacity 260ms cubic-bezier(.22,.61,.36,1),
+    transform 320ms cubic-bezier(.22,.61,.36,1);
+}
+.reader-content p[data-reader-paragraph].is-visible{
+  opacity:1;
+  transform:translate3d(0,0,0);
+  will-change:auto;
+}
+
+/* 不让动画成为滚动的负担；低性能设备也保持稳定。 */
+@media (prefers-reduced-motion: reduce){
+  .reader-content p[data-reader-paragraph]{
+    opacity:1;
+    transform:none;
+    transition:none;
+  }
+}
+
+@media (hover:none){
+  .reader-scroll{
+    scroll-behavior:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+}
+
+/* Chromium 对长页面的绘制提示：不改变布局，只减少不必要的绘制工作。 */
+.reader-content p[data-reader-paragraph]{
+  contain:paint;
+}
+
+
+/* ===============================
+   v8 Reading Typography System
+   =============================== */
+.reader-content{
+  width:100%;
+  max-width:min(72vw,760px);
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+  padding-inline:0;
+}
+.reader-content p{
+  font-size:1em;
+  line-height:clamp(1.72, calc(2.05 - (var(--reading-size) / 100px)), 1.95);
+  letter-spacing:.018em;
+  word-spacing:.05em;
+}
+.reader-content h1{
+  max-width:100%;
+  font-weight:600;
+}
+/* 中文长阅读默认保持约 30~38 字宽的视觉密度 */
+@media(min-width:900px){
+ .reader-content{max-width:min(760px,58vw)}
+}
+@media(min-width:1500px){
+ .reader-content{max-width:780px}
+}
+/* 更像纸书的衬线模式 */
+.font-serif .reader-content{
+  max-width:min(740px,62vw);
+}
+.font-serif .reader-content p{
+  line-height:1.9;
+  letter-spacing:.025em;
+}
+/* 小屏不要强行窄列 */
+@media(max-width:700px){
+ .reader-content,.font-serif .reader-content{max-width:100%}
+ .reader-content p{line-height:1.78;letter-spacing:.01em}
+}
+
+/* ---- v9 chapter continuity ---- */
+.chapter-enter{
+  animation: chapter-arrive 220ms cubic-bezier(.22,.61,.36,1);
+}
+@keyframes chapter-arrive{
+  from{
+    opacity:.94;
+    transform:translate3d(0,8px,0);
+  }
+  to{
+    opacity:1;
+    transform:translate3d(0,0,0);
+  }
+}
+.chapter-end{
+  margin-top:clamp(56px,8vh,96px);
+  margin-bottom:clamp(40px,7vh,80px);
+  letter-spacing:.08em;
+}
